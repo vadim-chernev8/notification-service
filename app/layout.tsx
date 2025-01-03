@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import QueryProvider from '@/providers/QueryProvider';
+import { Theme, Flex, Heading } from "@radix-ui/themes";
+import NavigationMenu from '../components/NavigationMenu';
 import "./globals.css";
+import "@radix-ui/themes/styles.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +32,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>
+          <Theme>
+            <main className="bg-background">
+              <Heading as="h1" className="w-full z-[9999] bg-background text-center sticky top-0 text-white py-8">SkyCity Casino - Back Office</Heading>
+              <Flex>
+                <aside className="w-[300px] bg-white border border-r-grey-300">
+                  <NavigationMenu />
+                </aside>
+                <div className="flex-1">
+                  {children}
+                </div>
+              </Flex>
+            </main>
+          </Theme>
+        </QueryProvider>
       </body>
     </html>
   );
