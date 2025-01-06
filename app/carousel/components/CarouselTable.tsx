@@ -1,6 +1,6 @@
 import { Table } from "@radix-ui/themes";
-import { CheckIcon, Cross2Icon} from "@radix-ui/react-icons";
-import {getPathFromUrl} from "../../../utils/helpers/index";
+import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
+
 const mockData = [
     {
         promoName: '10 Free Spins',
@@ -124,7 +124,7 @@ export default function CarouselTable() {
                             </span>
                         </Table.Cell><Table.Cell py="4">
                             <span className="pl-5 border-l border-l-gray-300 block">
-                                {getPathFromUrl(item.imageUrl)}
+                               {`...${new URL(item.imageUrl).pathname}`}
                             </span>
                         </Table.Cell><Table.Cell py="4">
                             <span className="pl-5 border-l border-l-gray-300 block">
@@ -133,7 +133,7 @@ export default function CarouselTable() {
                         </Table.Cell>
                         <Table.Cell py="4">
                             <span className="pl-5 border-l border-l-gray-300 block">
-                                {getPathFromUrl(item.url)}
+                                {`...${new URL(item.url).pathname}`}
                             </span>
                         </Table.Cell>
                         <Table.Cell py="4">
