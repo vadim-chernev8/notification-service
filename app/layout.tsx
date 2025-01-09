@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import QueryProvider from '@/providers/QueryProvider';
 import { Theme, Flex, Heading } from "@radix-ui/themes";
-import NavigationMenu from '../components/NavigationMenu';
+import StoreProvider from '../providers/Store';
+import ToastProvider from '../providers/ToastProvider';
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 
@@ -32,21 +33,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          <Theme>
-            <main className="bg-background">
-              <Heading as="h1" className="w-full z-[9999] bg-background text-center sticky top-0 text-white py-8">SkyCity Casino - Back Office</Heading>
-              <Flex>
-                <aside className="w-[300px] bg-white border border-r-grey-300">
-                  <NavigationMenu />
-                </aside>
-                <div className="flex-1">
-                  {children}
-                </div>
-              </Flex>
-            </main>
-          </Theme>
-        </QueryProvider>
+        <ToastProvider>
+          <QueryProvider>
+            <StoreProvider>
+              <Theme>
+                <main className="bg-background">
+                  <Heading as="h1" className="w-full z-[9999] bg-background text-center text-white py-8">Notification Service</Heading>
+                  <Flex>
+                    {children}
+                  </Flex>
+                </main>
+              </Theme>
+            </StoreProvider>
+          </QueryProvider>
+        </ToastProvider>
       </body>
     </html>
   );

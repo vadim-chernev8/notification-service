@@ -16,7 +16,7 @@ const Pagination = ({ totalPages = 10, onPageChange }) => {
     };
 
     return (
-        <Flex justify='center' className="flex  space-x-2 p-4 bg-white">
+        <Flex justify='center' className="flex  space-x-2 p-4">
             <Button
                 className={`px-4 py-2 text-sm font-medium rounded-md ${
                     currentPage === 1
