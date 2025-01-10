@@ -3,7 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface NotificationsState {
     notifications: Notification[];
     newNotifications: Notification[];
-    pageNotificationsIds: string[];
+    nextNotificationId: string | undefined;
+    pageNotificationsId: string | null;
     totalPages: number | null;
 }
 
@@ -17,7 +18,8 @@ export interface Notification {
 const initialState: NotificationsState = {
     notifications: [],
     newNotifications: [],
-    pageNotificationsIds: [],
+    nextNotificationId: undefined,
+    pageNotificationsId: null,
     totalPages: null,
 };
 
@@ -33,7 +35,7 @@ interface DeleteNotificationPayload {
 };
 
 interface PageChangeNotificationPayload {
-    nextNotificationId: string;
+    nextNotificationId?: string;
 };
 const counterSlice = createSlice({
     name: 'notifications',
@@ -46,17 +48,25 @@ const counterSlice = createSlice({
             );
 
             return {
+                ...state,
                 notifications: [...action.payload.notifications],
                 newNotifications: [...filteredNewItems],
-                pageNotificationsIds: [...new Set([...state.pageNotificationsIds, action.payload.nextNotificationId])],
+                nextNotificationId: action.payload.nextNotificationId,
                 totalPages: action.payload.totalPages,
             };
         },
         pageChange: (state, action: PayloadAction<PageChangeNotificationPayload>) => {
+            if (!action.payload.nextNotificationId) {
+                return ({
+                    ...state,
+                    pageNotificationsId: null,
+                }); 
+            }
+            
             return ({
                 ...state,
-                nextNotificationId: action.payload.nextNotificationId,
-            })
+                pageNotificationsId: action.payload.nextNotificationId,
+            });
         },
         deleteNotification: (state, action: PayloadAction<DeleteNotificationPayload>) => {
             const [newNotification] = state.newNotifications;

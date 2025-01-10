@@ -28,13 +28,16 @@ interface Notification {
 export default function NotificationsList () {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const { notifications: notificationsList, totalPages, newNotifications } = useSelector((state: RootState) => state.notification);
+    const { notifications: notificationsList, newNotifications, nextNotificationId, pageNotificationsId } = useSelector((state: RootState) => state.notification);
     
     const getNotifications = async () => {
         try {
-            const notifications = await notificationService.getNotifications({});
+            const notifications = await notificationService.getNotifications({
+                ...(pageNotificationsId ? { startWithNotificationId: pageNotificationsId } : {}),
+            });
             dispatch(setNotificationsAction({
                 notifications: notifications.notifications.map(item => ({ ...item, created: item.created.toString()})),
+                nextNotificationId: notifications.nextNotificationId,
                 totalPages: Math.ceil(notifications.total / notifications.notifications.length),
             }));   
 
@@ -60,15 +63,15 @@ export default function NotificationsList () {
 
     useEffect(() => {
         let interval;
-        
+
         interval = setInterval(() => {
-            getNotifications();  
+            getNotifications();
         }, 2000);
 
         return () => {
             clearInterval(interval);
-          };
-    }, []);
+        };
+    }, [pageNotificationsId]);
 
     const publishNotification = useCallback(() => {
         async (data: Pick<Notification, 'title' | 'content'>) => {
@@ -81,11 +84,17 @@ export default function NotificationsList () {
         }
     }, []);
 
+    const onPageChange = useCallback((nextNotificationId: string) => {
+        dispatch(pageChangeAction({ nextNotificationId }));
+    }, []);
+
+    const handleNewNotifications = useCallback(() => {
+        dispatch(pageChangeAction({}));
+    }, []);
+
     const deleteNotification = useCallback(async (id: string) => {
         try {     
             await notificationService.deleteNotification({id});
-            dispatch(deleteNotificationAction({ id }));
-            getNotifications();
         } catch (err) {
             showToast('error', 'Oppps Error occured due to delete notification request !');
         }  
@@ -117,10 +126,11 @@ export default function NotificationsList () {
                     </Flex>
                 ) : (
                     <>
-                        <Flex width="100%" direction="column" gap="2">
+                        <Flex width="100%" direction="column" gap="2" className='relative'>
+                            {/* {loading ? <Spinner size="3" className='absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 right-0 bottom-0 z-[99]' /> : null} */}
                             {notificationsList.map((item) => {
                                 return (
-                                    <Box width="100%" key={item.id}>
+                                    <Box width="100%" key={item.id} >
                                         <NotificationItem
                                             title={item.title}
                                             content={item.content}
@@ -132,7 +142,10 @@ export default function NotificationsList () {
                                 );
                             })}
                         </Flex>
-                        {/* {totalPages ? <Pagination onPageChange={onPageChange} totalPages={totalPages} /> : null} */}
+                        <Flex gap="3" justify="center" py="3">
+                            <Button variant="surface" color="blue" onClick={handleNewNotifications}>New Notifications</Button>
+                            {nextNotificationId ? <Button variant="surface" color="blue" onClick={() => onPageChange(nextNotificationId)}>Previouse notifications</Button> : null}
+                        </Flex>
                     </>
                 )}
             </Flex>
